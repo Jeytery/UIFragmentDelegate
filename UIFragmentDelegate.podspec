@@ -9,7 +9,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "UIFragmentDelegate"
-  spec.version      = "1.0.1"
+  spec.version      = "1.0.1.1"
   spec.summary      = "Simple and fast Fragment library for your application"
   spec.description  = <<-DESC
   Free fragments library for your applicatioins. It will really help you (i can't uploud pod without description, so sorry for this bullshit)
@@ -21,7 +21,7 @@ Pod::Spec.new do |spec|
    spec.swift_version = "4.2"
   spec.source       = { 
     :git => "https://github.com/Jeytery/UIFragmentDelegate.git",  
-    :tag => "spec.version",
+    :tag => "spec.version.to_s",
   }
 
   spec.public_header_files = "UIFragmentDelegate/**/*.h"

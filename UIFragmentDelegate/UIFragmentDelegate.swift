@@ -9,7 +9,7 @@
 
 import UIKit
 
-/* version 1.0.1 */
+/* version 1.0.1.1 */
 
 public enum Side {
     case left
