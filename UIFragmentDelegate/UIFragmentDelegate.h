@@ -16,6 +16,5 @@ FOUNDATION_EXPORT const unsigned char UIFragmentDelegateVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <UIFragmentDelegate/PublicHeader.h>
 
-#import <UIFragmentDelegate/UIFragmentDelegate.swift>
 
 
