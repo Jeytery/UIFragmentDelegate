@@ -64,7 +64,7 @@ Pod::Spec.new do |spec|
   #  the deployment target. You can optionally include the target after the platform.
   #
 
-   spec.ios.deployment_target = "10.0"
+   spec.ios.deployment_target = "9.0"
    spec.swift_version = "4.2"
   # spec.platform     = :ios, "5.0"
 
@@ -81,7 +81,10 @@ Pod::Spec.new do |spec|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  spec.source       = { :git => "https://github.com/Jeytery/UIFragmentDelegate/UIFragmentDelegate.podspec.git", :tag => "#{spec.version.to_s}" }
+  spec.source       = { 
+    :git => "https://github.com/Jeytery/UIFragmentDelegate.git",  
+    :tag => "#{spec.version}",
+  }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -93,7 +96,7 @@ Pod::Spec.new do |spec|
   #
 
   #spec.source_files  = "UIFragmentDelegate/**/*"
-  spec.public_header_files = "UIFragmentDelegate/**/*.h"
+  #spec.public_header_files = "UIFragmentDelegate/**/*.h"
   spec.source_files = "UIFragmentDelegate/**/*.{h,m,swift}"
   #spec.exclude_files = "Classes/Exclude"
 
