@@ -11,24 +11,24 @@ import UIKit
 
 /* version 1.0 */
 
-enum Side {
+public enum Side {
     case left
     case right
     case bottom
     case top
 }
 
-enum Effect {
+public enum Effect {
     case blur
     case blackout
 }
 
-enum Action {
+public enum Action {
     case show
     case hide
 }
 
-class UIFragmentDelegate {
+public class UIFragmentDelegate {
 
     public var parentVC: UIViewController?
     public var fragmentVC: UIViewController
@@ -48,7 +48,7 @@ class UIFragmentDelegate {
 
     //MARK: - internal functions
 
-    init(parentVC: UIViewController?, fragmentVC: UIViewController, side: Side) {
+    public init(parentVC: UIViewController?, fragmentVC: UIViewController, side: Side) {
         self.parentVC = parentVC
         self.fragmentVC = fragmentVC
         self.side = side
