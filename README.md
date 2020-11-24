@@ -1,6 +1,10 @@
 # UIFragmentDelegate
 Simple and fast fragments for your application. 
 
+![alt text](https://github.com/Jeytery/UIFragmentDelegate//blob/master/UIFragmentDelegate_v1.png?raw=true)
+
+
+
 Fast setup:
 
 import UIFragmentDelegate
