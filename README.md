@@ -1,5 +1,4 @@
 ## UIFragmentDelegate <h2>
-
 ![alt text](https://github.com/Jeytery/UIFragmentDelegate//blob/master/UIFragmentDelegate_v2.png?raw=true)
 Simple and fast fragments for your application. 
 
