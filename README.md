@@ -7,7 +7,7 @@ import UIFragmentDelegate
 
 lazy var fragmentDelegate = UIFragmentDelegate(parentVC: parenVC, fragmentVC: fragmentVC, side: .bottom)
 .
-//parentVC - VC which shows your FragmentVC. Also i use bottom side as example. Chooose what would you like.
+//parentVC - VC which shows your FragmentVC. Also i use bottom side as example. Chooose whatever would you like.
 
 fragmentDelegate.intend = 100
 
