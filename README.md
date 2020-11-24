@@ -10,6 +10,7 @@ lazy var fragmentDelegate = UIFragmentDelegate(parentVC: parenVC, fragmentVC: fr
 //parentVC - VC which shows your FragmentVC. Also i use bottom side as example. Chooose what would you like.
 
 fragmentDelegate.intend = 100
+
 fragmentDelegate.show(animated: true, completion: nil)
 
 
