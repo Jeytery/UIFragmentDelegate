@@ -21,7 +21,7 @@ Pod::Spec.new do |spec|
    spec.swift_version = "4.2"
   spec.source       = { 
     :git => "https://github.com/Jeytery/UIFragmentDelegate.git",  
-    :tag => "spec.version.to_s",
+    :tag => "#{spec.version}"
   }
 
   spec.public_header_files = "UIFragmentDelegate/**/*.h"

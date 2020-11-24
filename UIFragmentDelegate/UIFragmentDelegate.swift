@@ -9,7 +9,7 @@
 
 import UIKit
 
-/* version 1.0.1.1 */
+/* version 2.0 */
 
 public enum Side {
     case left
@@ -36,6 +36,8 @@ public class UIFragmentDelegate {
     public var effectIntensity: CGFloat = 0.7
     public var intend: Int = 300
     public var effect: Effect? = nil
+    public var edges: (bottom: Int, top: Int, left: Int, right: Int) = (bottom: 0, top: 0, left: 0, right: 0)
+    public var corners: (corners: UIRectCorner, radius: Int)? = nil
 
     private var fragmentData: (x: Int, y: Int, deltaX: Int, deltaY: Int, height: Int, width: Int, size: Int) = (x: 0, y: 0, deltaX: 0, deltaY: 0, height: 0, width: 0, size: 0)
     private var blackoutView = UIView()
@@ -75,33 +77,33 @@ public class UIFragmentDelegate {
     private func setFragmentData() {
         switch self.side {
             case .bottom:
-                self.fragmentData.x = 0
-                self.fragmentData.y = Int(self.screenSize.height)
-                self.fragmentData.width = Int(screenSize.width)
-                self.fragmentData.height = Int(self.screenSize.height) - self.intend
-                self.fragmentData.deltaX = 0
-                self.fragmentData.deltaY = Int(self.screenSize.height) - self.fragmentData.height
+                self.fragmentData.x = 0 + self.edges.left
+                self.fragmentData.y = Int(self.screenSize.height) + self.edges.top
+                self.fragmentData.width = Int(screenSize.width - CGFloat(self.edges.left + self.edges.right))
+                self.fragmentData.height = Int(self.screenSize.height) - (self.intend + self.edges.top + self.edges.bottom)
+                self.fragmentData.deltaX = 0 + self.edges.left
+                self.fragmentData.deltaY = Int(self.screenSize.height) - self.fragmentData.height - self.edges.bottom
             case .left:
-                self.fragmentData.x = -(Int(self.screenSize.width) - self.intend)
-                self.fragmentData.y = 0
-                self.fragmentData.width = Int(self.screenSize.width) - self.intend
-                self.fragmentData.height = Int(self.screenSize.height)
-                self.fragmentData.deltaX = 0
-                self.fragmentData.deltaY = 0
+                self.fragmentData.x = -(Int(self.screenSize.width) - self.intend) + self.edges.left
+                self.fragmentData.y = 0 + self.edges.top
+                self.fragmentData.width = Int(self.screenSize.width) - self.intend - (self.edges.right + self.edges.left)
+                self.fragmentData.height = Int(self.screenSize.height) - (self.edges.top + self.edges.bottom)
+                self.fragmentData.deltaX = 0 + self.edges.left
+                self.fragmentData.deltaY = 0 + self.edges.top
             case .right:
                 self.fragmentData.x = Int( (screenSize.width) )
-                self.fragmentData.y = 0
-                self.fragmentData.width = Int(Int(screenSize.width) - self.intend)
-                self.fragmentData.height = Int(self.screenSize.height)
-                self.fragmentData.deltaX = Int(self.screenSize.width) - self.fragmentData.width
-                self.fragmentData.deltaY = 0
+                self.fragmentData.y = 0 + self.edges.bottom
+                self.fragmentData.width = Int(Int(screenSize.width) - self.intend) - (self.edges.left + self.edges.right)
+                self.fragmentData.height = Int(self.screenSize.height) - Int(self.edges.top + self.edges.bottom)
+                self.fragmentData.deltaX = Int(self.screenSize.width) - self.fragmentData.width - self.edges.right
+                self.fragmentData.deltaY = 0 + self.edges.bottom
             case .top:
-                self.fragmentData.x = 0
-                self.fragmentData.y = -(Int(screenSize.height) - self.intend)
-                self.fragmentData.width = Int(self.screenSize.width)
-                self.fragmentData.height = Int(screenSize.height) - self.intend
-                self.fragmentData.deltaX = 0
-                self.fragmentData.deltaY = 0
+                self.fragmentData.x = self.edges.left
+                self.fragmentData.y = -(Int(screenSize.height) - self.intend) + self.edges.top
+                self.fragmentData.width = Int(self.screenSize.width) - (self.edges.left + self.edges.right)
+                self.fragmentData.height = Int(screenSize.height) - self.intend - (self.edges.top + self.edges.bottom)
+                self.fragmentData.deltaX = self.edges.left
+                self.fragmentData.deltaY = self.edges.top
         }
     }
 
@@ -241,39 +243,54 @@ public class UIFragmentDelegate {
     private func setEffectAlpha(value: Float) {
         guard effect != nil else {return}
         if effect == .blackout {
-            self.blackoutView.alpha = CGFloat(getAlphaValue(value: value))
+            self.blackoutView.alpha = CGFloat(getAlphaValue(value: value ))
         } else if effect == .blur {
-            self.blurView.alpha = CGFloat(getAlphaValue(value: value))
+            self.blurView.alpha = CGFloat(getAlphaValue(value: value ))
+        }
+    }
+
+    private func getDeadlock() -> CGFloat {
+        switch self.side {
+            case .bottom:
+                return (self.screenSize.height - self.fragmentVC.view.frame.height) - CGFloat(self.edges.bottom)
+            case .top:
+                return self.fragmentVC.view.frame.height + CGFloat(self.edges.top)
+            case .left:
+                return 0 + self.fragmentVC.view.frame.width + CGFloat(self.edges.left)
+            case .right:
+                return self.screenSize.width - self.fragmentVC.view.frame.width - CGFloat(self.edges.right)
         }
     }
 
     private func closeGestureCompletion(value: Float) {
-        let coords = getDiaposon()
+        let deadlock = getDeadlock()
         switch side {
             case .bottom:
-                if value < coords.a.lowerBound + closeGestureIdleState { // minY
+                if value < Float(deadlock) + closeGestureIdleState { // minY
                     setFrame(animated: true, action: .show, completion: nil)
                 } else {
-                    hide(animated: true, completion: nil)
+                    self.hide(animated: true, completion: nil)
                 }
                 break
             case .top:
-                if value > coords.a.upperBound - closeGestureIdleState { // maxY
+                if value + Float(self.edges.top) > Float(deadlock) - closeGestureIdleState { // maxY
                     setFrame(animated: true, action: .show, completion: nil)
+                    print("\(value + Float(self.edges.top)) > \( Float(deadlock) - closeGestureIdleState)")
                 } else {
-                    hide(animated: true, completion: nil)
+                    self.hide(animated: true, completion: nil)
+                    print("\(value + Float(self.edges.top)) < \( Float(deadlock) - closeGestureIdleState)")
                 }
             case .left:
-                if value > coords.a.upperBound - closeGestureIdleState { // maxX
+                if value + Float(self.edges.left) > Float(deadlock) - closeGestureIdleState { // maxX
                     setFrame(animated: true, action: .show, completion: nil)
                 } else {
-                    hide(animated: true, completion: nil)
+                    self.hide(animated: true, completion: nil)
                 }
             case .right:
-                if value < coords.a.lowerBound + closeGestureIdleState { // minX
+                if value - Float(self.edges.right) < Float(deadlock) + closeGestureIdleState { // minX
                     setFrame(animated: true, action: .show, completion: nil)
                 } else {
-                    hide(animated: true, completion: nil)
+                    self.hide(animated: true, completion: nil)
                 }
         }
         if self.effect == .blackout {
@@ -284,31 +301,49 @@ public class UIFragmentDelegate {
 
     }
 
+    private func frameInc(translation: CGPoint) -> CGFloat {
+        switch self.side {
+            case .bottom:
+                let deadlock = (self.screenSize.height - self.fragmentVC.view.frame.height) - CGFloat(self.edges.bottom)
+                let dframe = self.fragmentVC.view.layer.frame.minY - deadlock
+                if self.fragmentVC.view.frame.origin.y < deadlock {return self.fragmentVC.view.frame.origin.y} // guard >=
+                else if -translation.y > CGFloat(dframe) { return deadlock }
+                return self.fragmentVC.view.frame.origin.y + translation.y
+            case .left:
+                let deadlock = 0 + self.fragmentVC.view.frame.width + CGFloat(self.edges.left)
+                let dframe: Double = Double(deadlock - self.fragmentVC.view.layer.frame.maxX)
+                if self.fragmentVC.view.frame.maxX > deadlock { return 0 + CGFloat(self.edges.left) } // guard <=
+                else if translation.x > CGFloat(dframe) { return 0 + CGFloat(self.edges.left) }
+                return self.fragmentVC.view.frame.origin.x + translation.x
+            case .right:
+                let deadlock = self.screenSize.width - self.fragmentVC.view.frame.width - CGFloat(self.edges.right)
+                let dframe = self.fragmentVC.view.frame.minX - deadlock
+                if self.fragmentVC.view.frame.minX < deadlock { return deadlock }
+                else if -translation.x > CGFloat(dframe) { return deadlock }
+                return self.fragmentVC.view.frame.origin.x + translation.x
+            case .top:
+                let deadlock = self.fragmentVC.view.frame.height + CGFloat(self.edges.top)
+                let dframe = deadlock - self.fragmentVC.view.frame.maxY
+                if self.fragmentVC.view.frame.maxY > deadlock { return CGFloat(self.edges.top) } // guard >=
+                else if translation.y > CGFloat(dframe) { return CGFloat(self.edges.top) }
+                return self.fragmentVC.view.frame.origin.y + translation.y
+        }
+    }
+
     @objc func closeGesture (_ sender: UIPanGestureRecognizer) {
+    
         let view = sender.view!
-        var dy: CGFloat = 0
-        var dx: CGFloat = 0
-        guard side == .left || side == .right else {
+
+        guard self.side != .bottom && self.side != .top else {
             switch sender.state {
                 case .changed:
-                    let translation = sender.translation(in: self.fragmentVC.view)
-                    dy = view.center.y + translation.y
-                    dx = view.center.x
-                    if dy > screenSize.height - (view.frame.height / 2) && side == .bottom {
-                        view.center = CGPoint(x: dx, y: dy)
-                        setEffectAlpha(value: Float(view.layer.frame.minY))
-                    } else if dy < view.frame.height / 2 && side == .top {
-                        view.center = CGPoint(x: dx, y: dy)
-                        setEffectAlpha(value: Float(view.layer.frame.maxY))
-                    }
-                    sender.setTranslation(CGPoint.zero, in: self.fragmentVC.view)
+                    let translation = sender.translation(in: view)
+                    view.frame.origin = CGPoint(x: CGFloat(self.edges.left), y: frameInc(translation: translation))
+                    setEffectAlpha(value: self.side == .bottom ? Float(self.fragmentVC.view.frame.minY + CGFloat(self.edges.bottom)) : Float(self.fragmentVC.view.frame.maxY - CGFloat(self.edges.top)) )
+                    sender.setTranslation(CGPoint.zero, in: view)
                     break
                 case .ended:
-                    if side == .bottom {
-                        closeGestureCompletion(value: Float(view.layer.frame.minY))
-                    } else if side == .top {
-                        closeGestureCompletion(value: Float(view.layer.frame.maxY))
-                    }
+                    closeGestureCompletion(value: self.side == .bottom ? Float(self.fragmentVC.view.frame.minY + CGFloat(self.edges.bottom)) : Float(self.fragmentVC.view.frame.maxY - CGFloat(self.edges.top)))
                     break
                 default:
                     break
@@ -318,28 +353,24 @@ public class UIFragmentDelegate {
 
         switch sender.state {
             case .changed:
-                let translation = sender.translation(in: self.fragmentVC.view)
-                dy = view.center.y
-                dx = view.center.x + translation.x
-                if dx < view.frame.width / 2 && side == .left {
-                    view.center = CGPoint(x: dx, y: dy)
-                    setEffectAlpha(value: Float(view.layer.frame.maxX))
-                } else if dx > screenSize.width - (view.frame.width / 2) && side == .right {
-                    view.center = CGPoint(x: dx, y: dy)
-                    setEffectAlpha(value: Float(view.layer.frame.minX))
-                }
-                sender.setTranslation(CGPoint.zero, in: self.fragmentVC.view)
+                let translation = sender.translation(in: view)
+                view.frame.origin = CGPoint(x: frameInc(translation: translation), y: CGFloat(self.edges.top))
+                setEffectAlpha(value: self.side == .left ? Float(self.fragmentVC.view.frame.maxX - CGFloat(self.edges.left)) : Float(self.fragmentVC.view.frame.minX + CGFloat(self.edges.right)) )
+                sender.setTranslation(CGPoint.zero, in: view)
                 break
             case .ended:
-                if side == .left {
-                    closeGestureCompletion(value: Float(view.layer.frame.maxX))
-                } else if side == .right {
-                    closeGestureCompletion(value: Float(view.layer.frame.minX))
-                }
+                closeGestureCompletion(value: self.side == .left ? Float(self.fragmentVC.view.frame.maxX - CGFloat(self.edges.left)) : Float(self.fragmentVC.view.frame.minX + CGFloat(self.edges.right)) )
                 break
             default:
                 break
         }
+    }
+
+    public func roundCorners(corners: UIRectCorner, radius: CGFloat) {
+        let path = UIBezierPath(roundedRect: self.fragmentVC.view.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        let mask = CAShapeLayer()
+        mask.path = path.cgPath
+        self.fragmentVC.view.layer.mask = mask
     }
 
     //MARK: - public functions
@@ -350,6 +381,7 @@ public class UIFragmentDelegate {
         self.blockBoth = true
         initialise()
         setFrame(animated: animated, action: .show, completion: nil)
+        self.corners != nil ? self.roundCorners(corners: [corners!.corners], radius: CGFloat(self.corners!.radius)) :
         completion?()
         guard self.effect != nil else {return}
         self.showEffect(animated: true)
@@ -359,6 +391,7 @@ public class UIFragmentDelegate {
         guard isToogled == true && blockBoth == false else {return}
         self.isToogled = !isToogled
         self.blockBoth = true
+        guard animated == true else {setFrame(animated: false, action: .hide, completion: nil); return}
         setFrame(animated: true, action: .hide, completion: nil)
         completion?()
         guard self.effect != nil else {return}
@@ -379,5 +412,15 @@ public class UIFragmentDelegate {
     public func activateCloseGesture() {
         let closeGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(closeGesture))
         self.fragmentVC.view.addGestureRecognizer(closeGestureRecognizer)
+    }
+
+    public func setFrameEdges( edges: (bottom: Int, top: Int, left: Int, right: Int), cornerRadius: (UIRectCorner, radius: Int) ) {
+        self.edges = edges
+        self.corners = cornerRadius
+    }
+
+    public func setFrameEdges( edges: (bottom: Int, top: Int, left: Int, right: Int), cornerRadius: Int) {
+        self.edges = edges
+        self.fragmentVC.view.layer.cornerRadius = CGFloat(cornerRadius)
     }
 }
