@@ -1,8 +1,9 @@
-### UIFragmentDelegate
+## UIFragmentDelegate <h2>
+
 ![alt text](https://github.com/Jeytery/UIFragmentDelegate//blob/master/UIFragmentDelegate_v2.png?raw=true)
 Simple and fast fragments for your application. 
 
-# Fast setup
+# Fast setup <h1>
 ```swift
 import UIFragmentDelegate
 
@@ -23,38 +24,38 @@ class ParentViewController: UIViewController {
 }
 ```
 
-## Addition settings 
+## Addition settings <h2>
 
-# Show Fragment on the Parent
+# Show Fragment on the Parent <h1>
 ```swift
 fragmentDelegate.show(animated: true , completion: nil)
 fragmentDelegate.show(animated: true , completion: {print("hello world!")})
 ```
 This is main function for you. When i tune in your delegate you can show fragment whenever you want. Also you can completion func.
-# Hide Fragment on the Parent
+# Hide Fragment on the Parent <h1>
 ```swift
 fragmentDelegate.hide(animated: true , completion: nil)
 fragmentDelegate.show(animated: true , completion: {print("hello world!")})
 ```
 Just hide your fragment.
-# Fragment's layer on the Parent
+# Fragment's layer on the Parent <h1>
 ```swift
 fragmentDelegate.setLayer(layer: 1)
 ```
-# Effect during showing animation
+# Effect during showing animation <h1>
 ```swift
 fragmentDelegate.activateEffect(effect: .blackout)
 fragmentDelegate.activateEffect(effect: .blur)
 fragmentDelegate.effect = .blur 
 ```
 You can use two effects: blackout and blur. Also it activate tap close gesture and you can chagne it in the future 
-# Close gesture 
+# Close gesture <h1>
 ```swift
 fragmentDelegate.activateCloseGesture()
 fragmentDelgate.closeGestureIdleState = 70 // standart is 60
 ```
 Allow you to close fragment with gesture. You can adjust the point to which the fragment cannot be closed
-# Set Shape of your fragment 
+# Set Shape of your fragment <h1>
 ```swift
 fragmentDelegate.setFrameEdges( edges: (bottom: 10, top: 10, left: 10, right: 10), cornerRadius: 10) // same func with radius for all corners 
 fragmentDelegate.setFrameEdges( edges: (bottom: 10, top: 10, left: 10, right: 10), cornerRadius: ([.topLeft, .topRight], radius: 10))
