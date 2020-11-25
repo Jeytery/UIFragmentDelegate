@@ -1,8 +1,10 @@
-## UIFragmentDelegate <h2>
-![alt text](https://github.com/Jeytery/UIFragmentDelegate//blob/master/UIFragmentDelegate_v2.png?raw=true)
+# UIFragmentDelegate 
+
+ ![alt text](https://github.com/Jeytery/UIFragmentDelegate//blob/master/UIFragmentDelegate_v2.png?raw=true)
+
 Simple and fast fragments for your application. 
 
-# Fast setup <h1>
+### Fast setup 
 ```swift
 import UIFragmentDelegate
 
@@ -23,38 +25,37 @@ class ParentViewController: UIViewController {
 }
 ```
 
-## Addition settings <h2>
-
-# Show Fragment on the Parent <h1>
+# Addition settings 
+### Show Fragment on the Parent 
 ```swift
 fragmentDelegate.show(animated: true , completion: nil)
 fragmentDelegate.show(animated: true , completion: {print("hello world!")})
 ```
 This is main function for you. When i tune in your delegate you can show fragment whenever you want. Also you can completion func.
-# Hide Fragment on the Parent <h1>
+### Hide Fragment on the Parent 
 ```swift
 fragmentDelegate.hide(animated: true , completion: nil)
 fragmentDelegate.show(animated: true , completion: {print("hello world!")})
 ```
 Just hide your fragment.
-# Fragment's layer on the Parent <h1>
+### Fragment's layer on the Parent 
 ```swift
 fragmentDelegate.setLayer(layer: 1)
 ```
-# Effect during showing animation <h1>
+### Effect during showing animation 
 ```swift
 fragmentDelegate.activateEffect(effect: .blackout)
 fragmentDelegate.activateEffect(effect: .blur)
 fragmentDelegate.effect = .blur 
 ```
 You can use two effects: blackout and blur. Also it activate tap close gesture and you can chagne it in the future 
-# Close gesture <h1>
+### Close gesture 
 ```swift
 fragmentDelegate.activateCloseGesture()
 fragmentDelgate.closeGestureIdleState = 70 // standart is 60
 ```
 Allow you to close fragment with gesture. You can adjust the point to which the fragment cannot be closed
-# Set Shape of your fragment <h1>
+### Set Shape of your fragment 
 ```swift
 fragmentDelegate.setFrameEdges( edges: (bottom: 10, top: 10, left: 10, right: 10), cornerRadius: 10) // same func with radius for all corners 
 fragmentDelegate.setFrameEdges( edges: (bottom: 10, top: 10, left: 10, right: 10), cornerRadius: ([.topLeft, .topRight], radius: 10))
