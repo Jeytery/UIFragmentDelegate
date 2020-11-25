@@ -27,7 +27,7 @@ class ParentViewController: UIViewController {
 
 # Addition settings 
 ### Show Fragment on the Parent 
-This is main function for you. When you set up your delegate you can show fragment whenever you want. Also you can completion func. 
+This is main function for you. When you set up your delegate you can show fragment whenever you want. Also you can add completion func
 ```swift
 fragmentDelegate.show(animated: true , completion: nil)
 fragmentDelegate.show(animated: false , completion: {print("hello world!")})
