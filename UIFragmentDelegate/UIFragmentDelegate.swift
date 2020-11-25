@@ -9,7 +9,7 @@
 
 import UIKit
 
-/* version 2.0 */
+/* version 2.1 */
 
 public enum Side {
     case left
@@ -21,12 +21,21 @@ public enum Side {
 public enum Effect {
     case blur
     case blackout
+    case without
 }
 
 public enum Action {
     case show
     case hide
 }
+
+public enum MessageStyle {
+    case standart
+    case rounded
+    case bottomRounded
+    case strict
+}
+
 
 public class UIFragmentDelegate {
 
@@ -38,6 +47,7 @@ public class UIFragmentDelegate {
     public var effect: Effect? = nil
     public var edges: (bottom: Int, top: Int, left: Int, right: Int) = (bottom: 0, top: 0, left: 0, right: 0)
     public var corners: (corners: UIRectCorner, radius: Int)? = nil
+    public var closeGestureIdleState: Float = 60
 
     private var fragmentData: (x: Int, y: Int, deltaX: Int, deltaY: Int, height: Int, width: Int, size: Int) = (x: 0, y: 0, deltaX: 0, deltaY: 0, height: 0, width: 0, size: 0)
     private var blackoutView = UIView()
@@ -46,7 +56,7 @@ public class UIFragmentDelegate {
     private var blockBoth: Bool = false
     private var layer: Int = 0
     private let screenSize = UIScreen.main.bounds.size
-    private let closeGestureIdleState: Float = 60
+    private var statusBarStatus: Bool = false
 
     //MARK: - internal functions
 
@@ -198,6 +208,8 @@ public class UIFragmentDelegate {
                 }
                 self.animate(animate: { self.blurView.alpha = 0 }, completion: { self.blurView.removeFromSuperview() })
                 return
+            case .without:
+                break
             case .none:
                 return
         }
@@ -366,6 +378,23 @@ public class UIFragmentDelegate {
         }
     }
 
+    private func setMessageFrame(style: MessageStyle) {
+        switch style {
+            case .standart:
+                self.setShape(edges: (bottom: 0, top: 0, left: 0, right: 0), cornerRadius: 0)
+                break
+            case .rounded:
+                self.setShape(edges: (bottom: 30, top: 15, left: 15, right: 15), cornerRadius: 15)
+                break
+            case .bottomRounded:
+                self.setShape(edges: (bottom: 0, top: 0, left: 0, right: 0), cornerRadius: (corners: [.bottomLeft, .bottomRight], radius: 15))
+                break
+            case .strict:
+                self.setShape(edges: (bottom: 15, top: 15, left: 15, right: 15), cornerRadius: 0)
+                break
+        }
+    }
+
     public func roundCorners(corners: UIRectCorner, radius: CGFloat) {
         let path = UIBezierPath(roundedRect: self.fragmentVC.view.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         let mask = CAShapeLayer()
@@ -414,13 +443,43 @@ public class UIFragmentDelegate {
         self.fragmentVC.view.addGestureRecognizer(closeGestureRecognizer)
     }
 
-    public func setFrameEdges( edges: (bottom: Int, top: Int, left: Int, right: Int), cornerRadius: (UIRectCorner, radius: Int) ) {
+    public func setShape( edges: (bottom: Int, top: Int, left: Int, right: Int), cornerRadius: (UIRectCorner, radius: Int) ) {
         self.edges = edges
         self.corners = cornerRadius
     }
 
-    public func setFrameEdges( edges: (bottom: Int, top: Int, left: Int, right: Int), cornerRadius: Int) {
+    public func setShape( edges: (bottom: Int, top: Int, left: Int, right: Int), cornerRadius: Int) {
         self.edges = edges
         self.fragmentVC.view.layer.cornerRadius = CGFloat(cornerRadius)
+    }
+
+    public func showMessage(duration: Double, lenght: Int, style: MessageStyle) {
+        guard self.isToogled == false else {return}
+        self.side = .top
+        self.intend = Int(screenSize.height) - lenght
+        self.closeGestureIdleState = 20
+        setMessageFrame(style: style)
+        UIApplication.shared.setStatusBarHidden(true, with: .fade)
+        show(animated: true, completion: nil)
+        activateCloseGesture()
+        guard self.isToogled == true else{return}
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            self.hide(animated: true, completion: {UIApplication.shared.setStatusBarHidden(false, with: .fade)})
+        }
+    }
+
+    public func showMessage(duration: Double, lenght: Int, shape: ( edges: (bottom: Int, top: Int, left: Int, right: Int), corners: UIRectCorner, radius: Int )) {
+        guard self.isToogled == false else {return}
+        self.side = .top
+        self.intend = Int(screenSize.height) - lenght
+        self.closeGestureIdleState = 20
+        setShape(edges: shape.edges, cornerRadius: (shape.corners, radius: shape.radius))
+        UIApplication.shared.setStatusBarHidden(true, with: .fade)
+        show(animated: true, completion: nil)
+        activateCloseGesture()
+        guard self.isToogled == true else{return}
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            self.hide(animated: true, completion: {UIApplication.shared.setStatusBarHidden(false, with: .fade)})
+        }
     }
 }
