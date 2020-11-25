@@ -36,7 +36,7 @@ fragmentDelegate.show(animated: false , completion: {print("hello world!")})
 The same as a show, but it hides fragment
 ```swift
 fragmentDelegate.hide(animated: true , completion: nil)
-fragmentDelegate.show(animated: false , completion: {print("hello world!")})
+fragmentDelegate.hide(animated: false , completion: {print("hello world!")})
 ```
 ### Fragment's layer on the Parent 
 ```swift
