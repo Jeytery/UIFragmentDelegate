@@ -16,12 +16,18 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="OnePlus 7_Default_Wallpapers (1)" translatesAutoresizingMaskIntoConstraints="NO" id="2Xy-Od-2FV">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                            </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uz1-1h-b2o">
                                 <rect key="frame" x="137.5" y="318.5" width="100" height="30"/>
+                                <color key="backgroundColor" systemColor="systemOrangeColor" red="1" green="0.58431372549019611" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="100" id="0Qe-h6-H6x"/>
                                 </constraints>
-                                <state key="normal" title="Button"/>
+                                <state key="normal" title="Button">
+                                    <color key="titleColor" systemColor="systemPinkColor" red="1" green="0.17647058823529413" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
                                 <connections>
                                     <action selector="button:" destination="BYZ-38-t0r" eventType="touchUpInside" id="q8c-TR-PwE"/>
                                 </connections>
@@ -30,14 +36,21 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="Uz1-1h-b2o" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="0pz-gb-q0E"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="2Xy-Od-2FV" secondAttribute="trailing" id="76N-FA-cEg"/>
+                            <constraint firstItem="2Xy-Od-2FV" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="Ay1-lv-uUV"/>
+                            <constraint firstItem="2Xy-Od-2FV" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="GGt-W1-Wv2"/>
                             <constraint firstItem="Uz1-1h-b2o" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="MAK-7F-kbo"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="2Xy-Od-2FV" secondAttribute="bottom" id="ZC1-g5-m86"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="131.8840579710145" y="91.741071428571431"/>
+            <point key="canvasLocation" x="130.40000000000001" y="91.304347826086968"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="OnePlus 7_Default_Wallpapers (1)" width="864" height="1920"/>
+    </resources>
 </document>

@@ -9,7 +9,7 @@
 Pod::Spec.new do |spec|
 
   spec.name         = "UIFragmentDelegate"
-  spec.version      = "2.0"
+  spec.version      = "2.1"
   spec.summary      = "Simple and fast Fragment library for your application"
   spec.description  = <<-DESC
   Free fragments library for your applicatioins. It will really help you (i can't uploud pod without description, so sorry for this bullshit)

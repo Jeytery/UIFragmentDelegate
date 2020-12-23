@@ -10,9 +10,15 @@ import UIKit
 
 class FragmentViewController: UIViewController {
 
+    public var optAction: ( () -> Void )?
+
+    @IBAction func optWasPressed(_ sender: Any) {
+        guard optAction?() != nil else { return }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .red
+        self.view.backgroundColor = .systemBlue
         // Do any additional setup after loading the view.
     }
 

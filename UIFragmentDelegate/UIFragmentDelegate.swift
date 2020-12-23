@@ -9,7 +9,17 @@
 
 import UIKit
 
-/* version 2.1 */
+/* version b2.1 */
+
+// bug with close effect [+]
+// now version is in beta and looks like b2.1, where 'b' is beta [+]
+// bug with blur intencity [+]
+// add opportunity to change intensity of effect [+]
+
+// blur is not cool
+// add opportunity to break show/hide animation
+// remake messages (with only 4 styles)
+// want to have bounce effect while back gesture in the future
 
 public enum Side {
     case left
@@ -36,13 +46,25 @@ public enum MessageStyle {
     case strict
 }
 
+public struct UIFragmentParameters {
+
+    var side: Side = .bottom
+    var effectIntensity: CGFloat? = nil // nil
+    var intend: Int = 300
+    var effect: Effect? = nil
+    var edges: (bottom: Int, top: Int, left: Int, right: Int) = (bottom: 0, top: 0, left: 0, right: 0)
+    var corners: (corners: UIRectCorner, radius: Int)? = nil
+    var closeGestureIdleState: Float = 60
+    var layer: Int = 0
+
+}
 
 public class UIFragmentDelegate {
 
     public var parentVC: UIViewController?
     public var fragmentVC: UIViewController
     public var side: Side = .bottom
-    public var effectIntensity: CGFloat = 0.7
+    public var effectIntensity: CGFloat? = nil
     public var intend: Int = 300
     public var effect: Effect? = nil
     public var edges: (bottom: Int, top: Int, left: Int, right: Int) = (bottom: 0, top: 0, left: 0, right: 0)
@@ -58,12 +80,29 @@ public class UIFragmentDelegate {
     private let screenSize = UIScreen.main.bounds.size
     private var statusBarStatus: Bool = false
 
+    //private var animator = UIViewPropertyAnimator(duration: 0.5, curve: .linear)
+
     //MARK: - internal functions
 
-    public init(parentVC: UIViewController?, fragmentVC: UIViewController, side: Side) {
+    public init(parentVC: UIViewController?, fragmentVC: UIViewController) {
         self.parentVC = parentVC
         self.fragmentVC = fragmentVC
-        self.side = side
+    }
+
+    public init(parentVC: UIViewController?, fragmentVC: UIViewController, parameters: UIFragmentParameters) {
+        self.parentVC = parentVC
+        self.fragmentVC = fragmentVC
+        setParameters(parameters: parameters)
+    }
+
+    private func setParameters(parameters: UIFragmentParameters) {
+        self.side = parameters.side
+        self.effectIntensity = parameters.effectIntensity!
+        self.intend = parameters.intend
+        self.effect = parameters.effect
+        self.edges = parameters.edges
+        self.corners = parameters.corners
+        self.closeGestureIdleState = parameters.closeGestureIdleState
     }
 
     private func converDiaposon(value: Float , diaposonA: ClosedRange<Float>, diaposonB: ClosedRange<Float>) -> Float {
@@ -144,7 +183,7 @@ public class UIFragmentDelegate {
     }
 
     private func initialise() {
-        guard parentVC != nil else {print("parentVC is nil"); return}
+        guard parentVC != nil else { print("parentVC is nil"); return }
         setFragmentData()
         self.fragmentVC.view.frame = CGRect(x: fragmentData.x, y: fragmentData.y, width: fragmentData.width, height: fragmentData.height)
         self.parentVC!.addChild(self.fragmentVC)
@@ -157,7 +196,7 @@ public class UIFragmentDelegate {
     }
 
     private func showEffect(animated: Bool) {
-        guard parentVC != nil else {print("parentVC is nil"); return}
+        guard parentVC != nil else { print("parentVC is nil"); return }
         switch self.effect {
             case .blackout:
                 self.blackoutView.backgroundColor = .black
@@ -166,11 +205,12 @@ public class UIFragmentDelegate {
                 self.parentVC!.view.insertSubview(blackoutView, belowSubview: self.fragmentVC.view)
                 let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapCloseGesture))
                 self.blackoutView.addGestureRecognizer(gestureRecognizer)
-                guard animated == true else{
-                    self.blackoutView.alpha = 0.7
+                guard animated == true else {
+                    self.blackoutView.alpha = effectIntensity!
                     return
                 }
-                self.animate(animate: {self.blackoutView.alpha = 0.7}, completion: nil)
+
+                self.animate(animate: {self.blackoutView.alpha = self.effectIntensity!}, completion: nil)
                 break
             case .blur:
                 self.blurView.frame = parentVC!.view.frame
@@ -179,10 +219,10 @@ public class UIFragmentDelegate {
                 let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapCloseGesture))
                 self.blurView.addGestureRecognizer(gestureRecognizer)
                 guard animated == true else{
-                    self.blurView.alpha = 0.7
+                    self.blurView.alpha = effectIntensity!
                     return
                 }
-                self.animate(animate: {self.blurView.alpha = 1}, completion: nil)
+                self.animate(animate: {self.blurView.alpha = self.effectIntensity!}, completion: nil)
                 break
             default:
                 break
@@ -221,8 +261,8 @@ public class UIFragmentDelegate {
 
     private func getDiaposon() -> (a: ClosedRange<Float>, b: ClosedRange<Float>) {
         var a: ClosedRange<Float>           // from (side)
-        var b: ClosedRange<Float> = 0...1.0 // to (effect)
-        if self.effect == .blackout { b = 0...0.7} else if self.effect == .blur { b = 0...0.7 }
+        let b: ClosedRange<Float> = 0...Float(self.effectIntensity!) // to (effect)
+        //if self.effect == .blackout { b = 0...0.7} else if self.effect == .blur { b = 0...0.7 }
         switch self.side {
             case .bottom:
                 a = Float(self.screenSize.height - self.fragmentVC.view.frame.height)...Float(screenSize.height) // for minY
@@ -242,18 +282,18 @@ public class UIFragmentDelegate {
     private func getAlphaValue(value: Float) -> Float {
         switch self.side {
             case .bottom:
-                return 0.7 - converDiaposon(value: value, diaposonA: getDiaposon().a, diaposonB: getDiaposon().b)
+                return Float(effectIntensity!) - converDiaposon(value: value, diaposonA: getDiaposon().a, diaposonB: getDiaposon().b)
             case .top:
                 return converDiaposon(value: value, diaposonA: getDiaposon().a, diaposonB: getDiaposon().b)
             case .left:
                 return converDiaposon(value: value, diaposonA: getDiaposon().a, diaposonB: getDiaposon().b)
             case .right:
-                return 0.7 - converDiaposon(value: value, diaposonA: getDiaposon().a, diaposonB: getDiaposon().b)
+                return Float(effectIntensity!) - converDiaposon(value: value, diaposonA: getDiaposon().a, diaposonB: getDiaposon().b)
         }
     }
 
     private func setEffectAlpha(value: Float) {
-        guard effect != nil else {return}
+        guard effect != nil else { return }
         if effect == .blackout {
             self.blackoutView.alpha = CGFloat(getAlphaValue(value: value ))
         } else if effect == .blur {
@@ -287,10 +327,8 @@ public class UIFragmentDelegate {
             case .top:
                 if value + Float(self.edges.top) > Float(deadlock) - closeGestureIdleState { // maxY
                     setFrame(animated: true, action: .show, completion: nil)
-                    print("\(value + Float(self.edges.top)) > \( Float(deadlock) - closeGestureIdleState)")
                 } else {
                     self.hide(animated: true, completion: nil)
-                    print("\(value + Float(self.edges.top)) < \( Float(deadlock) - closeGestureIdleState)")
                 }
             case .left:
                 if value + Float(self.edges.left) > Float(deadlock) - closeGestureIdleState { // maxX
@@ -304,11 +342,6 @@ public class UIFragmentDelegate {
                 } else {
                     self.hide(animated: true, completion: nil)
                 }
-        }
-        if self.effect == .blackout {
-            animate(animate: {self.blackoutView.alpha = CGFloat(0.7)}, completion: nil)
-        } else if self.effect == .blur {
-            animate(animate: {self.blackoutView.alpha = CGFloat(1)}, completion: nil)
         }
 
     }
@@ -395,7 +428,7 @@ public class UIFragmentDelegate {
         }
     }
 
-    public func roundCorners(corners: UIRectCorner, radius: CGFloat) {
+    private func roundCorners(corners: UIRectCorner, radius: CGFloat) {
         let path = UIBezierPath(roundedRect: self.fragmentVC.view.bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         let mask = CAShapeLayer()
         mask.path = path.cgPath
@@ -434,8 +467,13 @@ public class UIFragmentDelegate {
         setFrame(animated: false, action: .hide, completion: nil)
     }
 
-    public func activateEffect(effect: Effect) {
+    public func activateEffect(effect: Effect, intensity: CGFloat?) {
         self.effect = effect
+        self.effectIntensity = intensity
+        if intensity == nil {
+            if self.effect == .blackout { effectIntensity = 0.7 } else { effectIntensity = 0.5}
+        }
+
     }
 
     public func activateCloseGesture() {
@@ -443,43 +481,16 @@ public class UIFragmentDelegate {
         self.fragmentVC.view.addGestureRecognizer(closeGestureRecognizer)
     }
 
-    public func setShape( edges: (bottom: Int, top: Int, left: Int, right: Int), cornerRadius: (UIRectCorner, radius: Int) ) {
-        self.edges = edges
+    public func setShape( edges: (bottom: Int, top: Int, left: Int, right: Int)?, cornerRadius: (UIRectCorner, radius: Int) ) {
         self.corners = cornerRadius
+        guard edges != nil else {return}
+        self.edges = edges!
     }
 
-    public func setShape( edges: (bottom: Int, top: Int, left: Int, right: Int), cornerRadius: Int) {
-        self.edges = edges
+    public func setShape( edges: (bottom: Int, top: Int, left: Int, right: Int)?, cornerRadius: Int) {
         self.fragmentVC.view.layer.cornerRadius = CGFloat(cornerRadius)
+        guard edges != nil else {return}
+        self.edges = edges!
     }
 
-    public func showMessage(duration: Double, lenght: Int, style: MessageStyle) {
-        guard self.isToogled == false else {return}
-        self.side = .top
-        self.intend = Int(screenSize.height) - lenght
-        self.closeGestureIdleState = 20
-        setMessageFrame(style: style)
-        UIApplication.shared.setStatusBarHidden(true, with: .fade)
-        show(animated: true, completion: nil)
-        activateCloseGesture()
-        guard self.isToogled == true else{return}
-        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-            self.hide(animated: true, completion: {UIApplication.shared.setStatusBarHidden(false, with: .fade)})
-        }
-    }
-
-    public func showMessage(duration: Double, lenght: Int, shape: ( edges: (bottom: Int, top: Int, left: Int, right: Int), corners: UIRectCorner, radius: Int )) {
-        guard self.isToogled == false else {return}
-        self.side = .top
-        self.intend = Int(screenSize.height) - lenght
-        self.closeGestureIdleState = 20
-        setShape(edges: shape.edges, cornerRadius: (shape.corners, radius: shape.radius))
-        UIApplication.shared.setStatusBarHidden(true, with: .fade)
-        show(animated: true, completion: nil)
-        activateCloseGesture()
-        guard self.isToogled == true else{return}
-        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-            self.hide(animated: true, completion: {UIApplication.shared.setStatusBarHidden(false, with: .fade)})
-        }
-    }
 }
